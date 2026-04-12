@@ -96,7 +96,7 @@ export default function App() {
       const result = await client.predict("/predict", { audio_path: file });
 
       // result.data[0] = {label: conf} dict from Gradio Label component
-      const rawDict = result.data[0] as Record<string, number>;
+      const rawDict = (result.data as any[])[0] as Record<string, number>;
       const sorted: Prediction[] = Object.entries(rawDict)
         .map(([label, confidence]) => ({ label, confidence }))
         .sort((a, b) => b.confidence - a.confidence)
