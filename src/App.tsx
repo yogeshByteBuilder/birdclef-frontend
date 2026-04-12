@@ -96,11 +96,15 @@ export default function App() {
       const result = await client.predict("/predict", { audio_path: file });
 
       // result.data[0] = {label: conf} dict from Gradio Label component
-      const rawDict = (result.data as any[])[0] as Record<string, number>;
-      const sorted: Prediction[] = Object.entries(rawDict)
-        .map(([label, confidence]) => ({ label, confidence }))
-        .sort((a, b) => b.confidence - a.confidence)
-        .slice(0, 5);
+     // Get the main output object from Gradio
+      const outputObj = (result.data as any[])[0];
+      
+      // Gradio's Label component actually returns the array inside an object
+      // under the key "confidences"
+      const sorted: Prediction[] = outputObj.confidences.map((item: any) => ({
+        label: item.label,
+        confidence: item.confidence
+      })).slice(0, 5);
 
       setPredictions(sorted);
       setStatus("done");
@@ -140,7 +144,8 @@ export default function App() {
   const onDragLeave = () => dropRef.current?.classList.remove("drag-over");
 
   // ── microphone recording ───────────────────────────────────────────────
-  const startRecording = async () => {
+// ── microphone recording ───────────────────────────────────────────────
+  const startRecording = async () => { // <-- 1. Removed 'err' from here
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mr = new MediaRecorder(stream);
@@ -148,22 +153,34 @@ export default function App() {
       chunksRef.current = [];
       mr.ondataavailable = (e) => chunksRef.current.push(e.data);
       mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        // 2. Removed the "audio/webm" type so Apple devices (iOS/Mac) don't crash!
+        const blob = new Blob(chunksRef.current); 
         if (audioUrl) URL.revokeObjectURL(audioUrl);
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
-        setFileName("recorded.webm");
-        runInference(blob, "recorded.webm");
+        setFileName("recorded_audio");
+        runInference(blob, "recorded_audio");
         stream.getTracks().forEach((t) => t.stop());
       };
       mr.start();
       setStatus("recording");
-    } catch {
-      setErrorMsg("Microphone access denied.");
+    } catch (error: any) { // <-- 3. Catch the actual error here!
+      console.error("The exact microphone error is:", error.name, error.message);
+      
+      // 4. Tell the React UI to show the red error box
       setStatus("error");
+      
+      if (error.name === 'NotAllowedError') {
+        setErrorMsg("Browser or OS blocked access. Please allow mic permissions.");
+      } else if (error.name === 'NotFoundError') {
+        setErrorMsg("No microphone detected. Please plug one in.");
+      } else if (error.name === 'NotReadableError') {
+        setErrorMsg("Another app (like Zoom or Meet) is currently using the mic.");
+      } else {
+        setErrorMsg("Microphone error: " + error.message);
+      }
     }
   };
-
   const stopRecording = () => {
     mediaRef.current?.stop();
     setStatus("processing");
