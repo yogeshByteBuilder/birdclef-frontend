@@ -186,7 +186,7 @@ export default function App() {
           <div className="header-icon">🐦</div>
           <div>
             <h1>BirdCLEF 2026</h1>
-            <p className="subtitle">EfficientNet-B3 · Focal Loss · Gwalior Demo</p>
+            <p className="subtitle">AI-Driven Acoustic Monitoring for Wildlife Conservation</p>
           </div>
         </header>
 
@@ -286,7 +286,7 @@ export default function App() {
         {/* ── footer ────────────────────────────────────────────────── */}
         <footer>
           <span>Pushkal Sharma · Yogesh Shrivastava · MITS Gwalior</span>
-          <span>Guided by Dr. Nishant Jain</span>
+          <span>Guided by prof. Manisha Pathak</span>
         </footer>
       </div>
     </>
