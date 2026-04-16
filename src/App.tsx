@@ -202,8 +202,8 @@ export default function App() {
         <header>
           <div className="header-icon">🐦</div>
           <div>
-            <h1>BirdCLEF 2026</h1>
-            <p className="subtitle">AI-Driven Acoustic Monitoring for Wildlife Conservation</p>
+            <h1>BIODIVERSITY MONITOR </h1>
+            <p className="subtitle">AUTOMATED BIRD SPECIES IDENTIFICATION FROM AUDIO SOUNDSCAPES</p>
           </div>
         </header>
 
