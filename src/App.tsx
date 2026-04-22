@@ -301,10 +301,10 @@ export default function App() {
         )}
 
         {/* ── footer ────────────────────────────────────────────────── */}
-        {/* <footer>
+        <footer>
           <span>Pushkal Sharma · Yogesh Shrivastava · MITS Gwalior</span>
           <span>Guided by prof. Manisha Pathak</span>
-        </footer> */}
+        </footer>
       </div>
     </>
   );
